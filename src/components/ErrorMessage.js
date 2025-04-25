@@ -1,6 +1,6 @@
 import React from 'react';
 import { Alert, IconButton } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
+import { X } from 'react-bootstrap-icons';
 
 const ErrorMessage = ({ message, onClose }) => {
   return (
@@ -13,7 +13,7 @@ const ErrorMessage = ({ message, onClose }) => {
           size="small"
           onClick={onClose}
         >
-          <CloseIcon fontSize="inherit" />
+          <X fontSize="inherit" />
         </IconButton>
       }
       sx={{ mb: 2 }}
