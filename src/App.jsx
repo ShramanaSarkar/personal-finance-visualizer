@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
-import { Container, Typography, Box, Button } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Container, Typography, Box, Grid, Button } from '@mui/material';
 import AddEditTransaction from './components/AddEditTransaction';
 import TransactionList from './components/TransactionList';
 import MonthlyExpensesChart from './components/MonthlyExpensesChart';
 import ErrorMessage from './components/ErrorMessage';
 import { useTransactions } from './hooks/useTransactions';
+import Dashboard from './components/Dashboard'; // New component
+
+const predefinedCategories = ['Food', 'Transportation', 'Entertainment', 'Utilities', 'Rent', 'Salary', 'Other'];
 
 function App() {
   const { transactions, addTransaction, updateTransaction, deleteTransaction, error, clearError } = useTransactions();
@@ -18,7 +21,7 @@ function App() {
 
   const handleEdit = (transaction) => {
     setEditingTransaction(transaction);
-    setIsAddEditDialogOpen(true); 
+    setIsAddEditDialogOpen(true);
   };
 
   const handleCloseAddEditDialog = () => {
@@ -27,7 +30,7 @@ function App() {
   };
 
   return (
-    <Container maxWidth="md">
+    <Container maxWidth="lg">
       <Typography variant="h4" align="center" gutterBottom>
         Personal Finance Visualizer
       </Typography>
@@ -44,26 +47,35 @@ function App() {
           editingTransaction={editingTransaction}
           updateTransaction={updateTransaction}
           onCloseEdit={handleCloseAddEditDialog}
+          categories={predefinedCategories} // Pass categories
         />
       </Box>
 
-      <Box mb={3}>
-        <Typography variant="h6" gutterBottom>
-          Transaction List
-        </Typography>
-        <TransactionList
-          transactions={transactions}
-          onEdit={handleEdit}
-          onDelete={deleteTransaction}
-        />
-      </Box>
-
-      <Box>
-        <Typography variant="h6" gutterBottom>
-          Monthly Expenses
-        </Typography>
-        <MonthlyExpensesChart transactions={transactions} />
-      </Box>
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={4}>
+          <Dashboard transactions={transactions} /> {/* Pass transactions to Dashboard */}
+        </Grid>
+        <Grid item xs={12} md={8}>
+          <Box mb={3}>
+            <Typography variant="h6" gutterBottom>
+              Transaction List
+            </Typography>
+            <TransactionList
+              transactions={transactions}
+              onEdit={handleEdit}
+              onDelete={deleteTransaction}
+            />
+          </Box>
+        </Grid>
+        <Grid item xs={12}>
+          <Box>
+            <Typography variant="h6" gutterBottom>
+              Monthly Expenses
+            </Typography>
+            <MonthlyExpensesChart transactions={transactions} />
+          </Box>
+        </Grid>
+      </Grid>
     </Container>
   );
 }

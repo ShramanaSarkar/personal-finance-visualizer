@@ -10,6 +10,7 @@ const TransactionList = ({ transactions, onEdit, onDelete }) => {
             <TableCell>Date</TableCell>
             <TableCell align="right">Amount</TableCell>
             <TableCell>Description</TableCell>
+            <TableCell>Category</TableCell>
             <TableCell align="right">Actions</TableCell>
           </TableRow>
         </TableHead>
@@ -24,6 +25,7 @@ const TransactionList = ({ transactions, onEdit, onDelete }) => {
               </TableCell>
               <TableCell align="right">${transaction.amount.toFixed(2)}</TableCell>
               <TableCell>{transaction.description}</TableCell>
+              <TableCell>{transaction.category}</TableCell>
               <TableCell align="right">
                 <Button size="small" onClick={() => onEdit(transaction)}>
                   Edit
@@ -36,7 +38,7 @@ const TransactionList = ({ transactions, onEdit, onDelete }) => {
           ))}
           {transactions.length === 0 && (
             <TableRow>
-              <TableCell colSpan={4} align="center">No transactions yet.</TableCell>
+              <TableCell colSpan={5} align="center">No transactions yet.</TableCell>
             </TableRow>
           )}
         </TableBody>
