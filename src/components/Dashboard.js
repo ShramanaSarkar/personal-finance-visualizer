@@ -12,13 +12,9 @@ const Dashboard = ({ transactions }) => {
     return acc;
   }, {});
 
-  const sortedCategoryExpenses = Object.entries(categoryExpenses)
-    .sort(([, a], [, b]) => b - a)
-    .slice(0, 3); // Top 3 categories
-
   const recentTransactions = [...transactions]
     .sort((a, b) => new Date(b.date) - new Date(a.date))
-    .slice(0, 5); // Most recent 5
+    .slice(0, 5);
 
   return (
     <Card>

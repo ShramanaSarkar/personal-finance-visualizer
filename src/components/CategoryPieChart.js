@@ -5,8 +5,10 @@ const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d'
 
 const CategoryPieChart = ({ transactions }) => {
   const categoryExpenses = transactions.reduce((acc, transaction) => {
-    if (transaction.category) {
-      acc[transaction.category] = (acc[transaction.category] || 0) + transaction.amount;
+    if (transaction.category && transaction.amount < 0) { // Consider only expenses for the breakdown
+      acc[transaction.category] = (acc[transaction.category] || 0) + Math.abs(transaction.amount);
+    } else if (transaction.category && transaction.amount > 0) {
+      
     }
     return acc;
   }, {});

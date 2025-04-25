@@ -5,7 +5,10 @@ import TransactionList from './components/TransactionList';
 import MonthlyExpensesChart from './components/MonthlyExpensesChart';
 import ErrorMessage from './components/ErrorMessage';
 import { useTransactions } from './hooks/useTransactions';
-import Dashboard from './components/Dashboard'; // New component
+import Dashboard from './components/Dashboard';
+import BudgetSettings from './components/BudgetSettings'; // New component
+import BudgetComparisonChart from './components/BudgetComparisonChart'; // New component
+import SpendingInsights from './components/SpendingInsights'; // New component
 
 const predefinedCategories = ['Food', 'Transportation', 'Entertainment', 'Utilities', 'Rent', 'Salary', 'Other'];
 
@@ -13,6 +16,14 @@ function App() {
   const { transactions, addTransaction, updateTransaction, deleteTransaction, error, clearError } = useTransactions();
   const [editingTransaction, setEditingTransaction] = useState(null);
   const [isAddEditDialogOpen, setIsAddEditDialogOpen] = useState(false);
+  const [monthlyBudgets, setMonthlyBudgets] = useState(() => {
+    const storedBudgets = localStorage.getItem('monthlyBudgets');
+    return storedBudgets ? JSON.parse(storedBudgets) : {};
+  });
+
+  useEffect(() => {
+    localStorage.setItem('monthlyBudgets', JSON.stringify(monthlyBudgets));
+  }, [monthlyBudgets]);
 
   const handleAddTransactionClick = () => {
     setEditingTransaction(null);
@@ -28,6 +39,20 @@ function App() {
     setIsAddEditDialogOpen(false);
     setEditingTransaction(null);
   };
+
+  const handleBudgetChange = (category, amount) => {
+    setMonthlyBudgets(prevBudgets => ({
+      ...prevBudgets,
+      [category]: parseFloat(amount),
+    }));
+  };
+
+  const currentMonthYear = new Date().toISOString().slice(0, 7);
+  console.log("Current Month Year:", currentMonthYear);
+  const currentMonthTransactions = transactions.filter(
+    (t) => t.date.startsWith(currentMonthYear) && t.amount < 0
+  );
+  console.log("Sample Transaction Date:", transactions[0]?.date); // Check the first transaction
 
   return (
     <Container maxWidth="lg">
@@ -47,32 +72,65 @@ function App() {
           editingTransaction={editingTransaction}
           updateTransaction={updateTransaction}
           onCloseEdit={handleCloseAddEditDialog}
-          categories={predefinedCategories} // Pass categories
+          categories={predefinedCategories}
         />
       </Box>
 
       <Grid container spacing={3}>
-        <Grid item xs={12} md={4}>
-          <Dashboard transactions={transactions} /> {/* Pass transactions to Dashboard */}
+        <Grid item xs={12} md={6} width="100%">
+            <Box mb={3}>
+              <Typography variant="h6" gutterBottom>
+                Transaction List
+              </Typography>
+              <TransactionList
+                transactions={transactions}
+                onEdit={handleEdit}
+                onDelete={deleteTransaction}
+              />
+            </Box>
+          </Grid>
+        <Grid item xs={12} md={6} width="100%">
+          <Dashboard transactions={transactions} />
         </Grid>
-        <Grid item xs={12} md={8}>
+        
+        <Grid item xs={12} md={4} width="45%">
           <Box mb={3}>
             <Typography variant="h6" gutterBottom>
-              Transaction List
+              Monthly Expenses
             </Typography>
-            <TransactionList
-              transactions={transactions}
-              onEdit={handleEdit}
-              onDelete={deleteTransaction}
+            <MonthlyExpensesChart transactions={transactions} />
+          </Box>
+        </Grid>
+        <Grid item xs={12} md={8} width="45%">
+          <Box mb={3}>
+            <Typography variant="h6" gutterBottom>
+              Budget vs Actual ({currentMonthYear})
+            </Typography>
+            <BudgetComparisonChart
+              budgets={monthlyBudgets}
+              transactions={currentMonthTransactions}
+              categories={predefinedCategories}
+            />
+          </Box>
+        </Grid>
+        <Grid item xs={12}>
+          <Box mb={3}>
+            <Typography variant="h6" gutterBottom>
+              Budget Settings
+            </Typography>
+            <BudgetSettings
+              budgets={monthlyBudgets}
+              categories={predefinedCategories}
+              onBudgetChange={handleBudgetChange}
             />
           </Box>
         </Grid>
         <Grid item xs={12}>
           <Box>
             <Typography variant="h6" gutterBottom>
-              Monthly Expenses
+              Spending Insights ({currentMonthYear})
             </Typography>
-            <MonthlyExpensesChart transactions={transactions} />
+            <SpendingInsights transactions={currentMonthTransactions} budgets={monthlyBudgets} />
           </Box>
         </Grid>
       </Grid>

@@ -63,15 +63,22 @@ const AddEditTransaction = ({ open, addTransaction, editingTransaction, updateTr
     return isValid;
   };
 
+  const expenseCategories = ['Food', 'Transportation', 'Entertainment', 'Utilities', 'Rent', 'Salary', 'Other']; 
+
   const handleSubmit = () => {
     if (validateForm()) {
+      let signedAmount = parseFloat(amount);
+      if (expenseCategories.includes(category) && signedAmount > 0) {
+        signedAmount = -signedAmount;
+      }
       const newTransaction = {
         id: isEditMode ? editingTransaction.id : uuidv4(),
-        amount: parseFloat(amount),
+        amount: signedAmount,
         date: date.toISOString().split('T')[0],
         description: description.trim(),
         category: category,
       };
+      console.log("New Transaction before adding/updating:", newTransaction);
 
       if (isEditMode) {
         updateTransaction(newTransaction);
